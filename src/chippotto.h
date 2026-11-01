@@ -7,6 +7,9 @@
 #define REG_NUM    16
 #define STACK_SIZE 16
 
+#define V0         0x0
+#define VF         0xf
+
 typedef struct{
 	uint8_t  RAM[RAM_SIZE];  // Memory where the programs and space reserved for interpeter is
 	uint8_t  V[REG_NUM];     // General Purpose registers
@@ -40,5 +43,10 @@ int read_pc(chippotto *machine, int *value);
 int pop(chippotto *machine, int *value);
 int push(chippotto *machine, int value);
 
+// Access to timers
+int write_dt(chippotto *machine, int value);
+int write_st(chippotto *machine, int value);
+int read_dt(chippotto *machine, int *value);
+int read_st(chippotto *machine, int *value);
 
 #endif

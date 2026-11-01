@@ -1,5 +1,7 @@
 #include "chippotto.h"
 #include "stdio.h"
+#include <time.h>
+#include <stdlib.h>
 
 int init_chippotto(chippotto *machine){
 	if(machine == NULL) return -1;
@@ -15,7 +17,7 @@ int init_chippotto(chippotto *machine){
 	machine->I = 0;
 
 	
-	machine->SP = STACK_SIZE - 1;
+	machine->SP = -1;
 	for(int i = 0; i < STACK_SIZE; i++){
 		machine->STACK[i] = 0;
 	}
@@ -23,6 +25,7 @@ int init_chippotto(chippotto *machine){
 	machine->DT = 255;
 	machine->ST = 255;
 
+	srand(time(NULL));
 	return 0;
 }
 
@@ -77,18 +80,44 @@ int read_pc(chippotto *machine, int *value){
 // Access to the STACK
 int pop(chippotto *machine, int *value){
 	if(machine == NULL) return -1;
-	if(machine->SP >= STACK_SIZE-1) return -2;
+	if(machine->SP <= 0) return -2;
 
-	machine->SP++;
 	*value = machine->STACK[machine->SP];
+	machine->SP--;
 	return 0;
 }
 int push(chippotto *machine, int value){
 	if(machine == NULL) return -1;
-	if(machine->SP <= 0) return -2;
+	if(machine->SP >= STACK_SIZE-1) return -2;
 	value &= 0xff;
 
+	machine->SP++;
 	machine->STACK[machine->SP] = value;
-	machine->SP--;
+	return 0;
+}
+
+// Access to timers
+int write_dt(chippotto *machine, int value){
+	if(machine == NULL) return -1;
+	
+	machine->DT = value;
+	return 0;
+}
+int write_st(chippotto *machine, int value){
+	if(machine == NULL) return -1;
+	
+	machine->ST = value;
+	return 0;
+}
+int read_dt(chippotto *machine, int *value){
+	if(machine == NULL) return -1;
+	
+	*value = machine->DT;
+	return 0;
+}
+int read_st(chippotto *machine, int *value){
+	if(machine == NULL) return -1;
+	
+	*value = machine->ST;
 	return 0;
 }
