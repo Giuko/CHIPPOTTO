@@ -1,27 +1,31 @@
 
 
 void decode(int instr){
-	// Data extraction from instr received
+	// From instr to be used for instr recognition
 	int highest_nibble = (instr >> 12) & 0xf;       // 0xABCD -> 0xA
 	int lowest_nibble  = instr & 0xf;               // 0xABCD -> 0xD
-	int high_nibble    = (instr >> 8) & 0xf;        // 0xABCD -> 0xB
 	int low_byte       = instr & 0xff;              // 0xABCD -> 0xCD
-	int addr           = instr & 0xfff;             // 0xABCD -> 0xCBD
 	
+	// From instr to be used after instr recognition
 	int raddr_1        = (instr >> 8) & 0xf;        // 0xABCD -> 0xB
 	int raddr_2        = (instr >> 4) & 0xf;        // 0xABCD -> 0xC
-	int data           = instr & 0xff;              // 0xABCD -> 0xCD
+	int kk             = instr & 0xff;              // 0xABCD -> 0xCD
+	int nnn            = instr & 0xfff;             // 0xABCD -> 0xCBD
 	
 	int res;
 	
 	switch (highest_nibble) {
 		case 0x0:
-			if(low_byte == 0xE0){
-				// CLS
+			switch (lowest_nibble) {
+				case 0xe0:
+					// CLS
+					break;
+				case 0xee:
+					// RET
+					break;
 
-			}else if(low_byte == 0xEE){
-				// RET
-
+				default:
+					break;
 			}
 			break;
 
