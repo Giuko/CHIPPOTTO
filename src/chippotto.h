@@ -22,8 +22,23 @@ typedef struct{
 	uint8_t ST;              // Sound Timer
 }chippotto;
 
-void init_chippotto(chippotto *machine);
-int write_reg(int addr, int value);
-int read_reg(int addr, int *value);
+int init_chippotto(chippotto *machine);
+
+// Access to general purpose reg
+int write_reg(chippotto *machine, int addr, int value);
+int read_reg(chippotto *machine, int addr, int *value);
+
+// Access to I
+int write_I(chippotto *machine, int value);
+int read_I(chippotto *machine, int *value);
+
+// Access to PC
+int write_pc(chippotto *machine, int value);
+int read_pc(chippotto *machine, int *value);
+
+// Access to the STACK
+int pop(chippotto *machine, int *value);
+int push(chippotto *machine, int value);
+
 
 #endif

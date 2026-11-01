@@ -1,6 +1,6 @@
+#include "chippotto.h"
 
-
-void decode(int instr){
+void decode(int instr, chippotto *machine){
 	// From instr to be used for instr recognition
 	int highest_nibble = (instr >> 12) & 0xf;       // 0xABCD -> 0xA
 	int lowest_nibble  = instr & 0xf;               // 0xABCD -> 0xD
@@ -11,6 +11,7 @@ void decode(int instr){
 	int raddr_2        = (instr >> 4) & 0xf;        // 0xABCD -> 0xC
 	int kk             = instr & 0xff;              // 0xABCD -> 0xCD
 	int nnn            = instr & 0xfff;             // 0xABCD -> 0xCBD
+	int n              = instr & 0xf;               // 0xABCD -> 0xD
 	
 	int res;
 	
