@@ -40,7 +40,12 @@ int main(int argc, char *argv[]){
 	close(fd);
 
 	while(1){
+		if(argc > 2){
+			print_chippotto_info(&machine);
+			getc(stdin);
+		}
 		step_machine(&machine);		
+		
 	}
 
 	

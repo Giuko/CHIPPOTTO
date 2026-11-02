@@ -166,3 +166,29 @@ int read_st(chippotto *machine, int *value){
 	*value = machine->ST;
 	return 0;
 }
+
+// Debug info
+void print_chippotto_info(chippotto *machine){
+	if(machine == NULL){
+		printf("CHIPPOTTO is NULL\n");
+		return;
+	}
+
+	printf("PC: 0x%x\n", machine->PC);
+	printf("\t Program[0x%x]: 0x%04x\n", machine->PC, machine->RAM[machine->PC] << 8 |  machine->RAM[machine->PC+1]);
+	printf("SP: 0x%x\n", machine->SP);
+	printf("I:  0x%x\n", machine->I);
+	printf("GP Regs:\n");
+	for(int i = 0; i < 16; i++)
+		printf("\t V%d: 0x%x\n", i, machine->V[i]);
+	printf("Delay Timer: 0x%x\n", machine->DT);
+	printf("Sound Timer: 0x%x\n", machine->ST);
+	
+/*	printf("RAM content:\n");
+	for(int i = PROGRAM_START; i < RAM_SIZE; i++){
+		printf("0x%04x\t", machine->V[i]);
+		if((i-PROGRAM_START) % 8 == 0 && i != PROGRAM_START) printf("\n");
+	}
+*/
+	
+}

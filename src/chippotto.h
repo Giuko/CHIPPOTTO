@@ -52,4 +52,6 @@ int write_st(chippotto *machine, int value);
 int read_dt(chippotto *machine, int *value);
 int read_st(chippotto *machine, int *value);
 
+// Debug info
+void print_chippotto_info(chippotto *machine);
 #endif

@@ -8,7 +8,7 @@ int fetch(chippotto *machine, int *instr){
 	int pc;
 
 	read_pc(machine, &pc);
-	*instr = machine->RAM[pc];
+	*instr = machine->RAM[pc] << 8 | machine->RAM[pc+1];
 
 	pc += 2;
 	write_pc(machine, pc);
