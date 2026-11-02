@@ -1,11 +1,15 @@
 #include "chippotto.h"
 #include "stdio.h"
+#include "memory_map.h"
 #include <time.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
 
 int init_chippotto(chippotto *machine){
 	if(machine == NULL) return -1;
 	
+	machine->PC = RAM_OFFSET_PROGRAM;
 	for(int i = 0; i < RAM_SIZE; i++){
 		machine->RAM[i] = 0;
 	}
@@ -28,6 +32,26 @@ int init_chippotto(chippotto *machine){
 	srand(time(NULL));
 	return 0;
 }
+
+int load_ram_from_file(chippotto *machine, int fd){
+	if(machine == NULL) return -1;
+
+	ssize_t res = read(fd, machine->RAM+RAM_OFFSET_PROGRAM, RAM_SIZE-RAM_OFFSET_PROGRAM);
+	if(res == 0) {
+		printf("Empty File\n");
+		exit(-1);
+	}
+	if(res == -1) {
+		printf("Error reading the file\n");
+		exit(-1);
+	}
+	if(res > RAM_SIZE-RAM_OFFSET_PROGRAM) {
+		printf("File too big\n");
+		exit(-1);
+	}
+
+	return 0;
+} 
 
 // Access to general purpose reg
 int write_reg(chippotto *machine, int addr, int value){
