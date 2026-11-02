@@ -27,6 +27,7 @@ int decode_and_execute(chippotto *machine, int instr){
 	int raddr_2        = (instr >> 4) & 0xf;        // 0xABCD -> 0xC
 	int rdata_1;
 	int rdata_2;	
+	int n              = instr & 0xf;               // 0xABCD -> 0xD
 	int kk             = instr & 0xff;              // 0xABCD -> 0xCD
 	int nnn            = instr & 0xfff;             // 0xABCD -> 0xCBD
 	
@@ -203,6 +204,7 @@ int decode_and_execute(chippotto *machine, int instr){
 
 		case 0xD: 	// Dxyn
 			// Display n-byte sprite starting at mem I at (Vx, Vy), set VF = collision 
+			draw(rdata_1, rdata_2, n);
 			break;
 
 		case 0xE:	// Ex??

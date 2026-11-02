@@ -1,3 +1,4 @@
 chip8-test-rom/
 build/
 chippotto
+compile_commands.json

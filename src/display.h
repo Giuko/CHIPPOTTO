@@ -4,7 +4,7 @@
 #define SCREEN_WIDTH  63
 #define SCREEN_HEIGHT 31
 
-void draw(int x, int y);
+void draw(int x, int y, int n);
 void disp_clear();
 
 #endif

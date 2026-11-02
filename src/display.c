@@ -1,7 +1,12 @@
 #include "display.h"
+#include "screen.h"
 #include <stdint.h>
 #include <stdio.h>
 
+// This define the middleman between the chippotto specification 
+// and the used implementation to display the output
+
+uint8_t screen[SCREEN_HEIGHT][SCREEN_WIDTH];
 
 const int font[] = {0xf0, 0x90, 0x90, 0x90, 0xf0,
                     0x20, 0x60, 0x20, 0x20, 0x70,
@@ -20,19 +25,14 @@ const int font[] = {0xf0, 0x90, 0x90, 0x90, 0xf0,
                     0xf0, 0x80, 0xf0, 0x80, 0xf0,
                     0xf0, 0x80, 0xf0, 0x80, 0x80};
 
-void draw(int x, int y){
-	if(x >= SCREEN_WIDTH)  x = SCREEN_WIDTH - 1;
-	if(x < 0)              x = 0;
-
-	if(y >= SCREEN_HEIGHT) y = SCREEN_HEIGHT - 1;
-	if(y < 0)              y = 0;
-	
-	// Since in Unix Terminal (0;0) is equal to (1;1) shift everything to +1
-	x++;
-	y++;
-	printf("\033[%d;%dH*", x, y);
+void draw(int x, int y, int n){
+	screen[y][x] ^= 0x1;
+	screen__draw(x, y, 1);
 }
 
 void disp_clear(){
-	printf("\e[1;1H\e[2J");
+	for(int i = 0; i < SCREEN_HEIGHT; i++)
+		for(int j = 0; j < SCREEN_WIDTH; j++)
+			screen[i][j] = 0;
+	screen__disp_clear();
 }
