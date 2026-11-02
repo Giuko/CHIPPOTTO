@@ -1,6 +1,7 @@
 #include "chippotto.h"
 #include "display.h"
 #include <stdlib.h>
+#include <stdint.h>
 
 int fetch(chippotto *machine, int *instr){
 	if(machine == NULL) return - 1;	
@@ -28,16 +29,32 @@ int decode_and_execute(chippotto *machine, int instr){
 	int rdata_2;	
 	int kk             = instr & 0xff;              // 0xABCD -> 0xCD
 	int nnn            = instr & 0xfff;             // 0xABCD -> 0xCBD
-	int n              = instr & 0xf;               // 0xABCD -> 0xD
 	
+	int V0_data;
+	int VF_data;
+	int I_data;
+	int dt_data; 
+	int st_data; 
+
 	int pc;
 
 	int res;
 	int foo;
-	
+
+
+	// Retrieving register values alltogheter at the beginning
 	read_reg(machine, raddr_1, &rdata_1);
 	read_reg(machine, raddr_2, &rdata_2);
-	
+
+	read_reg(machine, 0x0, &V0_data);
+	read_reg(machine, 0xF, &VF_data);
+
+	read_pc(machine, &pc);
+	read_I(machine, &I_data);
+
+	read_dt(machine, &dt_data);
+	read_st(machine, &st_data);
+
 	switch (highest_nibble) {
 		case 0x0:
 			switch (lowest_nibble) {
@@ -63,28 +80,24 @@ int decode_and_execute(chippotto *machine, int instr){
 
 		case 0x2:	// 2nnn
 			// CALL addr
-			read_pc(machine, &pc);
 			push(machine, pc);
 			write_pc(machine, nnn);
 			break;
 
 		case 0x3:	// 3xkk
 			// Skip next instr if Vx == kk
-			read_pc(machine, &pc);
 			pc += 2;
 			if(rdata_1 == kk) write_pc(machine, pc);
 			break;
 
 		case 0x4:	// 4xkk
 			// Skip next instr if Vx != kk
-			read_pc(machine, &pc);
 			pc += 2;
 			if(rdata_1 != kk) write_pc(machine, pc);
 			break;
 
 		case 0x5:	// 5xy0
 			// Skip next instr if Vx == Vy
-			read_pc(machine, &pc);
 			pc += 2;
 			if(rdata_1 == rdata_2) write_pc(machine, pc);
 			break;
@@ -167,7 +180,6 @@ int decode_and_execute(chippotto *machine, int instr){
 
 		case 0x9:	// 9xy0
 			// Skip next instr if Vx != Vy
-			read_pc(machine, &pc);
 			pc += 2;
 			if(rdata_1 != rdata_2) write_pc(machine, pc);
 			break;
@@ -180,8 +192,7 @@ int decode_and_execute(chippotto *machine, int instr){
 
 		case 0xB:	// Bnnn
 			// Jump location to nnn + V0
-			read_reg(machine, V0, &rdata_1);
-			res = nnn + rdata_1;
+			res = nnn + V0_data;
 			write_pc(machine, res);
 			break;
 
@@ -211,8 +222,7 @@ int decode_and_execute(chippotto *machine, int instr){
 			switch (low_byte) {
 				case 0x07:
 					// Set Vx = delay timer
-					read_dt(machine, &rdata_1);
-					write_reg(machine, raddr_1, rdata_1);
+					write_reg(machine, raddr_1, dt_data);
 					break;
 				case 0x0a:
 					// wait for a key press, store the value of the key in Vx
@@ -227,8 +237,7 @@ int decode_and_execute(chippotto *machine, int instr){
 					break;
 				case 0x1e:
 					// Set I = I + Vx
-					read_I(machine, &foo);
-					res = foo + rdata_1;
+					res = I_data + rdata_1;
 					write_I(machine, res);
 					break;
 				case 0x29:

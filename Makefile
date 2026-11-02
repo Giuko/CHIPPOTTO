@@ -31,4 +31,4 @@ run: all
 
 # Clean build artifacts and binary
 clean:
-	rm -rf $(BLD_DIR) $(TARGET) a.out
+	rm -rf $(BLD_DIR) $(TARGET)
