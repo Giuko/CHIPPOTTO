@@ -37,6 +37,9 @@ int decode_and_execute(chippotto *machine, int instr){
 	int res;
 	int foo;
 	
+	read_reg(machine, raddr_1, &rdata_1);
+	read_reg(machine, raddr_2, &rdata_2);
+	
 	switch (highest_nibble) {
 		case 0x0:
 			switch (lowest_nibble) {
@@ -69,7 +72,6 @@ int decode_and_execute(chippotto *machine, int instr){
 
 		case 0x3:	// 3xkk
 			// Skip next instr if Vx == kk
-			read_reg(machine, raddr_1, &rdata_1);
 			read_pc(machine, &pc);
 			pc += 2;
 			if(rdata_1 == kk) write_pc(machine, pc);
@@ -77,7 +79,6 @@ int decode_and_execute(chippotto *machine, int instr){
 
 		case 0x4:	// 4xkk
 			// Skip next instr if Vx != kk
-			read_reg(machine, raddr_1, &rdata_1);
 			read_pc(machine, &pc);
 			pc += 2;
 			if(rdata_1 != kk) write_pc(machine, pc);
@@ -85,8 +86,6 @@ int decode_and_execute(chippotto *machine, int instr){
 
 		case 0x5:	// 5xy0
 			// Skip next instr if Vx == Vy
-			read_reg(machine, raddr_1, &rdata_1);
-			read_reg(machine, raddr_2, &rdata_2);
 			read_pc(machine, &pc);
 			pc += 2;
 			if(rdata_1 == rdata_2) write_pc(machine, pc);
@@ -99,7 +98,6 @@ int decode_and_execute(chippotto *machine, int instr){
 
 		case 0x7:	// 7xkk
 			// Set Vx += kk
-			read_reg(machine, raddr_1, &rdata_1);
 			rdata_1 += kk;
 			write_reg(machine, raddr_1, rdata_1);
 			break;
@@ -108,31 +106,22 @@ int decode_and_execute(chippotto *machine, int instr){
 			switch (lowest_nibble) {
 				case 0x0:
 					// Set Vx = Vy
-					read_reg(machine, raddr_2, &rdata_2);
 					write_reg(machine, raddr_1, rdata_2);
 					break;
 				case 0x1:
 					// Set Vx = Vx | Vy
-					read_reg(machine, raddr_1, &rdata_1);
-					read_reg(machine, raddr_2, &rdata_2);
 					write_reg(machine, raddr_1, rdata_1 | rdata_2);
 					break;
 				case 0x2:
 					// Set Vx = Vx & Vy
-					read_reg(machine, raddr_1, &rdata_1);
-					read_reg(machine, raddr_2, &rdata_2);
 					write_reg(machine, raddr_1, rdata_1 & rdata_2);
 					break;
 				case 0x3:
 					// Set Vx = Vx ^ Vy
-					read_reg(machine, raddr_1, &rdata_1);
-					read_reg(machine, raddr_2, &rdata_2);
 					write_reg(machine, raddr_1, rdata_1 ^ rdata_2);
 					break;
 				case 0x4:
 					// Set Vx = Vx + Vy, VF carry
-					read_reg(machine, raddr_1, &rdata_1);
-					read_reg(machine, raddr_2, &rdata_2);
 					res = rdata_1 + rdata_2;
 					foo = (res > 255) ? 1 : 0;
 					
@@ -141,8 +130,6 @@ int decode_and_execute(chippotto *machine, int instr){
 					break;
 				case 0x5:
 					// Set Vx = Vx - Vy, VF not borrow
-					read_reg(machine, raddr_1, &rdata_1);
-					read_reg(machine, raddr_2, &rdata_2);
 					res = rdata_1 - rdata_2;
 					foo = (rdata_1 >= rdata_2) ? 1 : 0;
 					
@@ -151,7 +138,6 @@ int decode_and_execute(chippotto *machine, int instr){
 					break;
 				case 0x6:
 					// Shift right Vx, VF borrow
-					read_reg(machine, raddr_1, &rdata_1);
 					res = rdata_1 >> 0x1;
 					foo = rdata_1 & 0x1;
 					
@@ -160,8 +146,6 @@ int decode_and_execute(chippotto *machine, int instr){
 					break;
 				case 0x7:
 					// Set Vx = Vy - Vx, VF not borrow
-					read_reg(machine, raddr_1, &rdata_1);
-					read_reg(machine, raddr_2, &rdata_2);
 					res = rdata_2 - rdata_1;
 					foo = (rdata_2 >= rdata_1) ? 1 : 0;
 					
@@ -170,7 +154,6 @@ int decode_and_execute(chippotto *machine, int instr){
 					break;
 				case 0xe:
 					// Shift left Vx, VF borrow 
-					read_reg(machine, raddr_1, &rdata_1);
 					res = rdata_1 << 0x1;
 					foo = (rdata_1>>0x7) & 0x1;
 					
@@ -186,8 +169,6 @@ int decode_and_execute(chippotto *machine, int instr){
 
 		case 0x9:	// 9xy0
 			// Skip next instr if Vx != Vy
-			read_reg(machine, raddr_1, &rdata_1);
-			read_reg(machine, raddr_2, &rdata_2);
 			read_pc(machine, &pc);
 			pc += 2;
 			if(rdata_1 != rdata_2) write_pc(machine, pc);
@@ -240,17 +221,14 @@ int decode_and_execute(chippotto *machine, int instr){
 					break;
 				case 0x15:
 					// Set delay timer = Vx
-					read_reg(machine, raddr_1, &rdata_1);
 					write_dt(machine, rdata_1);
 					break;
 				case 0x18:
 					// Set sound timer = Vx
-					read_reg(machine, raddr_1, &rdata_1);
 					write_st(machine, rdata_1);
 					break;
 				case 0x1e:
 					// Set I = I + Vx
-					read_reg(machine, raddr_1, &rdata_1);
 					read_I(machine, &foo);
 					res = foo + rdata_1;
 					write_I(machine, res);
