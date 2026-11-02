@@ -28,6 +28,7 @@ typedef struct{
 int init_chippotto(chippotto *machine);
 int load_ram_from_file(chippotto *machine, int fd);
 int step_machine(chippotto *machine);
+int load_font(chippotto *machine);
 
 // Access to general purpose reg
 int write_reg(chippotto *machine, int addr, int value);

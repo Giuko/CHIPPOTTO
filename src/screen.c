@@ -20,6 +20,15 @@ void screen__draw(int x, int y, int clear){
 	printf("\033[%d;%dH%c", x, y, c);
 }
 
+void screen__draw_row(int x, int y, uint8_t *row){
+	// Each row has 8 point to draw 
+	char c;
+	for(int i = 0; i < 8; i++){
+		c = (row[i]) ? '*' : ' ';
+		printf("\033[%d;%dH%c", x+i, y, c);
+	}
+}
+
 void screen__disp_clear(){
 	printf("\e[1;1H\e[2J");
 }

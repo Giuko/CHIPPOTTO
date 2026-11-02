@@ -1,10 +1,12 @@
 #ifndef __DISPLAY_H
 #define __DISPLAY_H
 
-#define SCREEN_WIDTH  63
-#define SCREEN_HEIGHT 31
+#include "chippotto.h"
 
-void draw(int x, int y, int n);
-void disp_clear();
+#define SCREEN_WIDTH  64
+#define SCREEN_HEIGHT 32
+
+int draw(chippotto *machine, int x, int y, int n);
+int disp_clear(chippotto *machine);
 
 #endif

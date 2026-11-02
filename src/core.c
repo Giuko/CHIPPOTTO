@@ -61,7 +61,7 @@ int decode_and_execute(chippotto *machine, int instr){
 			switch (lowest_nibble) {
 				case 0xe0:
 					// CLS
-					disp_clear();
+					disp_clear(machine);
 					break;
 				case 0xee:
 					// RET
@@ -204,7 +204,7 @@ int decode_and_execute(chippotto *machine, int instr){
 
 		case 0xD: 	// Dxyn
 			// Display n-byte sprite starting at mem I at (Vx, Vy), set VF = collision 
-			draw(rdata_1, rdata_2, n);
+			draw(machine, rdata_1, rdata_2, n);
 			break;
 
 		case 0xE:	// Ex??

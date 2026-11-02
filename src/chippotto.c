@@ -32,6 +32,7 @@ int init_chippotto(chippotto *machine){
 	machine->ST = 255;
 
 	srand(time(NULL));
+	load_font(machine);
 	return 0;
 }
 
