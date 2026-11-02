@@ -5,6 +5,6 @@
 #define SCREEN_HEIGHT 31
 
 void draw(int x, int y);
-void clear();
+void disp_clear();
 
 #endif

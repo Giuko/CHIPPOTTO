@@ -60,7 +60,7 @@ int decode_and_execute(chippotto *machine, int instr){
 			switch (lowest_nibble) {
 				case 0xe0:
 					// CLS
-					clear();
+					disp_clear();
 					break;
 				case 0xee:
 					// RET
@@ -209,9 +209,11 @@ int decode_and_execute(chippotto *machine, int instr){
 			switch (low_byte) {
 				case 0x9e:
 					// Skip next instr if KEY=Vx is pressed
+					// if(key() == Vx)
 					break;
 				case 0xA1:
 					// Skip next instr if KEY=Vx is not pressed
+					// if(key() != Vx)
 					break;
 				default:
 					break;
@@ -226,6 +228,7 @@ int decode_and_execute(chippotto *machine, int instr){
 					break;
 				case 0x0a:
 					// wait for a key press, store the value of the key in Vx
+					// Vx = get_key()
 					break;
 				case 0x15:
 					// Set delay timer = Vx

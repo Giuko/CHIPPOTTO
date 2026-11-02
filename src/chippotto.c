@@ -7,10 +7,11 @@
 #include <stdio.h>
 #include <unistd.h>
 
+extern int font[];
 int init_chippotto(chippotto *machine){
 	if(machine == NULL) return -1;
 	
-	machine->PC = RAM_OFFSET_PROGRAM;
+	machine->PC = PROGRAM_START;
 	for(int i = 0; i < RAM_SIZE; i++){
 		machine->RAM[i] = 0;
 	}
@@ -37,7 +38,7 @@ int init_chippotto(chippotto *machine){
 int load_ram_from_file(chippotto *machine, int fd){
 	if(machine == NULL) return -1;
 
-	ssize_t res = read(fd, machine->RAM+RAM_OFFSET_PROGRAM, RAM_SIZE-RAM_OFFSET_PROGRAM);
+	ssize_t res = read(fd, machine->RAM+PROGRAM_START, RAM_SIZE-PROGRAM_START);
 	if(res == 0) {
 		printf("Empty File\n");
 		exit(-1);
@@ -46,13 +47,23 @@ int load_ram_from_file(chippotto *machine, int fd){
 		printf("Error reading the file\n");
 		exit(-1);
 	}
-	if(res > RAM_SIZE-RAM_OFFSET_PROGRAM) {
+	if(res > RAM_SIZE-PROGRAM_START) {
 		printf("File too big\n");
 		exit(-1);
 	}
 
 	return 0;
 } 
+
+int load_font(chippotto *machine){
+	if(machine == NULL) return -1;
+
+	for(int i = 0; i < 16*5; i++){
+		machine->RAM[0x50+i] = font[i];
+	}
+
+	return 0;
+}
 
 int step_machine(chippotto *machine){
 	if(machine == NULL) return -1;
