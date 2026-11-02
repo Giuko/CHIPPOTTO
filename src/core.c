@@ -2,8 +2,6 @@
 #include "display.h"
 #include <stdlib.h>
 
-
-
 int fetch(chippotto *machine, int *instr){
 	if(machine == NULL) return - 1;	
 	int pc;

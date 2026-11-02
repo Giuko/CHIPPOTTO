@@ -1,4 +1,5 @@
 #include "chippotto.h"
+#include "core.h"
 #include "stdio.h"
 #include "memory_map.h"
 #include <time.h>
@@ -52,6 +53,14 @@ int load_ram_from_file(chippotto *machine, int fd){
 
 	return 0;
 } 
+
+int step_machine(chippotto *machine){
+	if(machine == NULL) return -1;
+	
+	step(machine);
+	return 0;
+}
+
 
 // Access to general purpose reg
 int write_reg(chippotto *machine, int addr, int value){
