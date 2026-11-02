@@ -1,7 +1,23 @@
 #include "chippotto.h"
+#include "display.h"
 #include <stdlib.h>
 
-void decode(chippotto *machine, int instr){
+
+
+int fetch(chippotto *machine, int *instr){
+	if(machine == NULL) return - 1;	
+	int pc;
+
+	read_pc(machine, &pc);
+	*instr = machine->RAM[pc];
+
+	pc += 2;
+	write_pc(machine, pc);
+	return 0;
+}
+
+int decode_and_execute(chippotto *machine, int instr){
+	if(machine == NULL) return - 1;	
 	// From instr to be used for instr recognition
 	int highest_nibble = (instr >> 12) & 0xf;       // 0xABCD -> 0xA
 	int lowest_nibble  = instr & 0xf;               // 0xABCD -> 0xD
@@ -26,6 +42,7 @@ void decode(chippotto *machine, int instr){
 			switch (lowest_nibble) {
 				case 0xe0:
 					// CLS
+					clear();
 					break;
 				case 0xee:
 					// RET
@@ -258,4 +275,15 @@ void decode(chippotto *machine, int instr){
 			break;
 
 	}
+	
+	return 0;
+}
+
+void step(chippotto *machine){
+	int instr;
+
+	fetch(machine, &instr);
+	decode_and_execute(machine, instr);
+
+
 }

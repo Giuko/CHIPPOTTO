@@ -1,4 +1,6 @@
 #include "display.h"
+#include <stdint.h>
+#include <stdio.h>
 
 const int CHAR_0[] = {0xf0, 0x90, 0x90, 0x90, 0xf0};
 const int CHAR_1[] = {0x20, 0x60, 0x20, 0x20, 0x70};
@@ -16,3 +18,20 @@ const int CHAR_C[] = {0xf0, 0x80, 0x80, 0x80, 0xf0};
 const int CHAR_D[] = {0xe0, 0x90, 0x90, 0x90, 0xe0};
 const int CHAR_E[] = {0xf0, 0x80, 0xf0, 0x80, 0xf0};
 const int CHAR_F[] = {0xf0, 0x80, 0xf0, 0x80, 0x80};
+
+void draw(int x, int y){
+	if(x >= SCREEN_WIDTH)  x = SCREEN_WIDTH - 1;
+	if(x < 0)              x = 0;
+
+	if(y >= SCREEN_HEIGHT) y = SCREEN_HEIGHT - 1;
+	if(y < 0)              y = 0;
+	
+	// Since in Unix Terminal (0;0) is equal to (1;1) shift everything to +1
+	x++;
+	y++;
+	printf("\033[%d;%dH*", x, y);
+}
+
+void clear(){
+	printf("\e[1;1H\e[2J");
+}
