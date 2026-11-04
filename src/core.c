@@ -2,34 +2,37 @@
 #include "display.h"
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
 
-int fetch(chippotto *machine, int *instr){
+extern int DEBUG;
+
+int fetch(chippotto *machine){
 	if(machine == NULL) return - 1;	
 	int pc;
 
 	read_pc(machine, &pc);
-	*instr = machine->RAM[pc] << 8 | machine->RAM[pc+1];
+	machine->instr = machine->RAM[pc] << 8 | machine->RAM[pc+1];
 
 	pc += 2;
 	write_pc(machine, pc);
 	return 0;
 }
 
-int decode_and_execute(chippotto *machine, int instr){
+int decode_and_execute(chippotto *machine){
 	if(machine == NULL) return - 1;	
 	// From instr to be used for instr recognition
-	int highest_nibble = (instr >> 12) & 0xf;       // 0xABCD -> 0xA
-	int lowest_nibble  = instr & 0xf;               // 0xABCD -> 0xD
-	int low_byte       = instr & 0xff;              // 0xABCD -> 0xCD
+	int highest_nibble = (machine->instr >> 12) & 0xf;       // 0xABCD -> 0xA
+	int lowest_nibble  = machine->instr & 0xf;               // 0xABCD -> 0xD
+	int low_byte       = machine->instr & 0xff;              // 0xABCD -> 0xCD
 	
 	// From instr to be used after instr recognition
-	int raddr_1        = (instr >> 8) & 0xf;        // 0xABCD -> 0xB
-	int raddr_2        = (instr >> 4) & 0xf;        // 0xABCD -> 0xC
+	int raddr_1        = (machine->instr >> 8) & 0xf;        // 0xABCD -> 0xB
+	int raddr_2        = (machine->instr >> 4) & 0xf;        // 0xABCD -> 0xC
 	int rdata_1;
 	int rdata_2;	
-	int n              = instr & 0xf;               // 0xABCD -> 0xD
-	int kk             = instr & 0xff;              // 0xABCD -> 0xCD
-	int nnn            = instr & 0xfff;             // 0xABCD -> 0xCBD
+	int n              = machine->instr & 0xf;               // 0xABCD -> 0xD
+	int kk             = machine->instr & 0xff;              // 0xABCD -> 0xCD
+	int nnn            = machine->instr & 0xfff;             // 0xABCD -> 0xCBD
 	
 	int V0_data;
 	int VF_data;
@@ -58,7 +61,7 @@ int decode_and_execute(chippotto *machine, int instr){
 
 	switch (highest_nibble) {
 		case 0x0:
-			switch (lowest_nibble) {
+			switch (low_byte) {
 				case 0xe0:
 					// CLS
 					disp_clear(machine);
@@ -76,40 +79,47 @@ int decode_and_execute(chippotto *machine, int instr){
 
 		case 0x1:	// 1nnn
 			// JP addr
+			if(DEBUG) printf("Jumping to 0x%04x\n", nnn);
 			write_pc(machine, nnn);
 			break;
 
 		case 0x2:	// 2nnn
 			// CALL addr
+			if(DEBUG) printf("Call func in 0x%04x\n", nnn);
 			push(machine, pc);
 			write_pc(machine, nnn);
 			break;
 
 		case 0x3:	// 3xkk
 			// Skip next instr if Vx == kk
+			if(DEBUG) printf("Skip next if Vx==kk\n");
 			pc += 2;
 			if(rdata_1 == kk) write_pc(machine, pc);
 			break;
 
 		case 0x4:	// 4xkk
 			// Skip next instr if Vx != kk
+			if(DEBUG) printf("Skip next if Vx!=kk\n");
 			pc += 2;
 			if(rdata_1 != kk) write_pc(machine, pc);
 			break;
 
 		case 0x5:	// 5xy0
 			// Skip next instr if Vx == Vy
+			if(DEBUG) printf("Skip next if Vx==Vy\n");
 			pc += 2;
 			if(rdata_1 == rdata_2) write_pc(machine, pc);
 			break;
 
 		case 0x6:	// 6xkk
 			// Set Vx = kk
+			if(DEBUG) printf("Set Vx=kk\n");
 			write_reg(machine, raddr_1, kk);
 			break;
 
 		case 0x7:	// 7xkk
 			// Set Vx += kk
+			if(DEBUG) printf("Set Vx+=kk\n");
 			rdata_1 += kk;
 			write_reg(machine, raddr_1, rdata_1);
 			break;
@@ -118,22 +128,27 @@ int decode_and_execute(chippotto *machine, int instr){
 			switch (lowest_nibble) {
 				case 0x0:
 					// Set Vx = Vy
+					if(DEBUG) printf("Set Vx=Vy\n");
 					write_reg(machine, raddr_1, rdata_2);
 					break;
 				case 0x1:
 					// Set Vx = Vx | Vy
+					if(DEBUG) printf("Set Vx|=Vy\n");
 					write_reg(machine, raddr_1, rdata_1 | rdata_2);
 					break;
 				case 0x2:
 					// Set Vx = Vx & Vy
+					if(DEBUG) printf("Set Vx&=Vy\n");
 					write_reg(machine, raddr_1, rdata_1 & rdata_2);
 					break;
 				case 0x3:
 					// Set Vx = Vx ^ Vy
+					if(DEBUG) printf("Set Vx^=Vy\n");
 					write_reg(machine, raddr_1, rdata_1 ^ rdata_2);
 					break;
 				case 0x4:
 					// Set Vx = Vx + Vy, VF carry
+					if(DEBUG) printf("Set Vx+=Vy\n");
 					res = rdata_1 + rdata_2;
 					foo = (res > 255) ? 1 : 0;
 					
@@ -142,6 +157,7 @@ int decode_and_execute(chippotto *machine, int instr){
 					break;
 				case 0x5:
 					// Set Vx = Vx - Vy, VF not borrow
+					if(DEBUG) printf("Set Vx-=Vy\n");
 					res = rdata_1 - rdata_2;
 					foo = (rdata_1 >= rdata_2) ? 1 : 0;
 					
@@ -150,6 +166,7 @@ int decode_and_execute(chippotto *machine, int instr){
 					break;
 				case 0x6:
 					// Shift right Vx, VF borrow
+					if(DEBUG) printf("Set Vx>>=1\n");
 					res = rdata_1 >> 0x1;
 					foo = rdata_1 & 0x1;
 					
@@ -158,6 +175,7 @@ int decode_and_execute(chippotto *machine, int instr){
 					break;
 				case 0x7:
 					// Set Vx = Vy - Vx, VF not borrow
+					if(DEBUG) printf("Set Vx=Vy-Vx\n");
 					res = rdata_2 - rdata_1;
 					foo = (rdata_2 >= rdata_1) ? 1 : 0;
 					
@@ -166,6 +184,7 @@ int decode_and_execute(chippotto *machine, int instr){
 					break;
 				case 0xe:
 					// Shift left Vx, VF borrow 
+					if(DEBUG) printf("Set Vx<<=1\n");
 					res = rdata_1 << 0x1;
 					foo = (rdata_1>>0x7) & 0x1;
 					
@@ -181,25 +200,29 @@ int decode_and_execute(chippotto *machine, int instr){
 
 		case 0x9:	// 9xy0
 			// Skip next instr if Vx != Vy
+			if(DEBUG) printf("Skip next if Vx!=Vy\n");
 			pc += 2;
 			if(rdata_1 != rdata_2) write_pc(machine, pc);
-			break;
 			break;
 
 		case 0xA:	// Annn
 			// Set value of I to nnn
+			if(DEBUG) printf("Set I=nnn\n");
 			write_I(machine, nnn);
 			break;
 
 		case 0xB:	// Bnnn
 			// Jump location to nnn + V0
+			if(DEBUG) printf("Jumping to 0x%04x + V0\n", nnn);
 			res = nnn + V0_data;
 			write_pc(machine, res);
 			break;
 
 		case 0xC:	// Cxkk
 			// Set Vx = rand & kk
+			if(DEBUG) printf("Set Vx = rand + kk\n");
 			res = rand() & kk;
+			write_reg(machine, raddr_1, res);
 			break;
 
 		case 0xD: 	// Dxyn
@@ -270,10 +293,9 @@ int decode_and_execute(chippotto *machine, int instr){
 }
 
 void step(chippotto *machine){
-	int instr;
 
-	fetch(machine, &instr);
-	decode_and_execute(machine, instr);
+	fetch(machine);
+	decode_and_execute(machine);
 
 
 }

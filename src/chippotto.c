@@ -60,7 +60,7 @@ int load_font(chippotto *machine){
 	if(machine == NULL) return -1;
 
 	for(int i = 0; i < 16*5; i++){
-		machine->RAM[0x50+i] = font[i];
+		machine->RAM[FONT_START+i] = font[i];
 	}
 
 	return 0;
@@ -110,7 +110,7 @@ int read_I(chippotto *machine, int *value){
 // Access to PC
 int write_pc(chippotto *machine, int value){
 	if(machine == NULL) return -1;
-	value &= 0xff;
+	value &= 0xffff;
 	
 	machine->PC = value;
 	return 0;
@@ -134,7 +134,7 @@ int pop(chippotto *machine, int *value){
 int push(chippotto *machine, int value){
 	if(machine == NULL) return -1;
 	if(machine->SP >= STACK_SIZE-1) return -2;
-	value &= 0xff;
+	value &= 0xffff;
 
 	machine->SP++;
 	machine->STACK[machine->SP] = value;
@@ -167,6 +167,8 @@ int read_st(chippotto *machine, int *value){
 	return 0;
 }
 
+extern int REGS;
+
 // Debug info
 void print_chippotto_info(chippotto *machine){
 	if(machine == NULL){
@@ -175,12 +177,14 @@ void print_chippotto_info(chippotto *machine){
 	}
 
 	printf("PC: 0x%x\n", machine->PC);
-	printf("\t Program[0x%x]: 0x%04x\n", machine->PC, machine->RAM[machine->PC] << 8 |  machine->RAM[machine->PC+1]);
+	printf("\t Program[0x%x]: 0x%04x\n", machine->PC, machine->instr);
 	printf("SP: 0x%x\n", machine->SP);
 	printf("I:  0x%x\n", machine->I);
-	printf("GP Regs:\n");
-	for(int i = 0; i < 16; i++)
-		printf("\t V%d: 0x%x\n", i, machine->V[i]);
+	if(REGS){
+		printf("GP Regs:\n");
+		for(int i = 0; i < 16; i++)
+			printf("\t V%d: 0x%x\n", i, machine->V[i]);
+	}
 	printf("Delay Timer: 0x%x\n", machine->DT);
 	printf("Sound Timer: 0x%x\n", machine->ST);
 	

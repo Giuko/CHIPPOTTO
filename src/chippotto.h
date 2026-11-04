@@ -11,18 +11,19 @@
 #define VF         0xf
 
 typedef struct{
-	uint8_t  RAM[RAM_SIZE];  // Memory where the programs and space reserved for interpeter is
-	uint8_t  V[REG_NUM];     // General Purpose registers
-	uint16_t I;		         // Register used to store mem addresses
+	uint8_t  RAM[RAM_SIZE+1];  // Memory where the programs and space reserved for interpeter is
+	uint8_t  V[REG_NUM];       // General Purpose registers
+	uint16_t I;		           // Register used to store mem addresses
 
-	uint16_t PC;             // Program Counter
+	uint16_t PC;               // Program Counter
+	int instr; 
 
 	// Stack pointer and stack mem
-	uint8_t  SP;
+	int16_t  SP;
 	uint16_t STACK[STACK_SIZE];
 
-	uint8_t DT;              // Delay Timer
-	uint8_t ST;              // Sound Timer
+	uint8_t DT;                // Delay Timer
+	uint8_t ST;                // Sound Timer
 }chippotto;
 
 int init_chippotto(chippotto *machine);
