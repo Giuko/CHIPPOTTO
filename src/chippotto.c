@@ -94,7 +94,7 @@ int read_reg(chippotto *machine, int addr, int *value){
 // Access to I
 int write_I(chippotto *machine, int value){
 	if(machine == NULL) return -1;
-	value &= 0xff;
+	value &= 0xffff;
 
 	machine->I = value;
 	return 0;

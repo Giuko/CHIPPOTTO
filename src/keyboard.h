@@ -18,4 +18,6 @@
 #define KEY_C 99
 #define KEY_V 118
 
+void enable_game_keyboard();
+void disable_game_keyboard();
 #endif
