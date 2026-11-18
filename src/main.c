@@ -65,7 +65,6 @@ int main(int argc, char *argv[]){
 	signal(SIGINT, signalHandler);
 
 	while(1){
-    screen__disp_clear();
 		step_machine(&machine);		
 		if(argc > 2){
 			getc(stdin);
