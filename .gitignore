@@ -1,4 +1,6 @@
-chip8-test-rom/
+chip8-test-rom1/
+chip8-test-rom2/
+chip8-test-suite/
 build/
 chippotto
 compile_commands.json
