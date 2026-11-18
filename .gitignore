@@ -4,4 +4,4 @@ chip8-test-suite/
 build/
 chippotto
 compile_commands.json
-*/.cache/
+.cache/

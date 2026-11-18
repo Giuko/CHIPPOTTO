@@ -1,5 +1,6 @@
 #include "chippotto.h"
 #include "display.h"
+#include "keyboard.h"
 #include "memory_map.h"
 #include <stdlib.h>
 #include <stdint.h>
@@ -237,14 +238,18 @@
       case 0xE:	// Ex??
         switch (low_byte) {
           case 0x9e:
-            if(DEBUG) printf("key() not implemented\n");
+            if(DEBUG) printf("Skip if Reg[Vx] is pressed \n");
             // Skip next instr if KEY=Vx is pressed
-            // if(key() == Vx)
+            pc += 2;
+            key(&res);
+            if(res == rdata_1) write_pc(machine, pc);
             break;
           case 0xA1:
-            if(DEBUG) printf("key() not implemented\n");
+            if(DEBUG) printf("Skip if Reg[Vx] is not pressed \n");
             // Skip next instr if KEY=Vx is not pressed
-            // if(key() != Vx)
+            pc += 2;
+            key(&res);
+            if(res != rdata_1) write_pc(machine, pc);
             break;
           default:
             break;
@@ -260,8 +265,10 @@
             break;
           case 0x0a:
             // wait for a key press, store the value of the key in Vx
-            if(DEBUG) printf("key() not implemented\n");
-            // Vx = get_key()
+            if(DEBUG) printf("A key press is awaited, and then stored in Vx\n");
+            get_key(&res);
+            rdata_1 = res;
+            write_reg(machine, raddr_1, rdata_1);
             break;
           case 0x15:
             // Set delay timer = Vx
