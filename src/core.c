@@ -1,3 +1,4 @@
+// core.c
 #include "chippotto.h"
 #include "display.h"
 #include "keyboard.h"

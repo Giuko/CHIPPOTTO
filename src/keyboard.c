@@ -1,3 +1,5 @@
+// keyboard.c
+
 #include "keyboard.h"
 #include <termios.h>
 #include <stdio.h>
@@ -5,8 +7,8 @@
 
 #ifndef __RAYLIB
 // Still not implemented outside RAYLIB
-void device__key(int *value){}
-void device__get_key(int *value){}
+void device__key(int *value){*value=0;}
+void device__get_key(int *value){*value=0;}
 #endif
 
 void enable_game_keyboard(){

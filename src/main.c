@@ -1,3 +1,4 @@
+// main.c
 #include <raylib.h>
 #include <stdio.h>
 #include <unistd.h>
