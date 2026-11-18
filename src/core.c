@@ -268,8 +268,7 @@
             // wait for a key press, store the value of the key in Vx
             if(DEBUG) printf("A key press is awaited, and then stored in Vx\n");
             get_key(&res);
-            rdata_1 = res;
-            write_reg(machine, raddr_1, rdata_1);
+            write_reg(machine, raddr_1, res);
             break;
           case 0x15:
             // Set delay timer = Vx

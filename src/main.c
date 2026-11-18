@@ -12,6 +12,7 @@
 #include <signal.h>
 
 #ifdef __RAYLIB
+#define STEPS_PER_FRAME 50
 #include "raylib.h"
 #endif
 
