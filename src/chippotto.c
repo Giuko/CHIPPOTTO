@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 extern int font[];
+extern int EXTRA;
 int init_chippotto(chippotto *machine){
 	if(machine == NULL) return -1;
 	
@@ -176,23 +177,17 @@ void print_chippotto_info(chippotto *machine){
 		return;
 	}
 
-	printf("PC: 0x%x\n", machine->PC);
-	printf("\t Program[0x%x]: 0x%04x\n", machine->PC, machine->instr);
-	printf("SP: 0x%x\n", machine->SP);
-	printf("I:  0x%x\n", machine->I);
-	if(REGS){
-		printf("GP Regs:\n");
-		for(int i = 0; i < 16; i++)
-			printf("\t V%d: 0x%x\n", i, machine->V[i]);
-	}
-	printf("Delay Timer: 0x%x\n", machine->DT);
-	printf("Sound Timer: 0x%x\n", machine->ST);
-	
-/*	printf("RAM content:\n");
-	for(int i = PROGRAM_START; i < RAM_SIZE; i++){
-		printf("0x%04x\t", machine->V[i]);
-		if((i-PROGRAM_START) % 8 == 0 && i != PROGRAM_START) printf("\n");
-	}
-*/
-	
+	printf("Program[0x%x]: 0x%04x\n", machine->PC, machine->instr);
+  if(EXTRA){
+    printf("PC: 0x%x\n", machine->PC);
+	  printf("SP: 0x%x\n", machine->SP);
+	  printf("I:  0x%x\n", machine->I);
+	  if(REGS){
+	  	printf("GP Regs:\n");
+	  	for(int i = 0; i < 16; i++)
+	  		printf("\t V%d: 0x%x\n", i, machine->V[i]);
+	  }
+	  printf("Delay Timer: 0x%x\n", machine->DT);
+	  printf("Sound Timer: 0x%x\n", machine->ST);
+  }
 }

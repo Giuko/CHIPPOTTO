@@ -46,11 +46,11 @@ int draw(chippotto *machine, int x, int y, int n){
 			int current_collision;
 			int k = 8 - j - 1;
 			int current_bit = (RAM_byte & (1 << k)) >> k;
-			current_collision = screen[i][j] & current_bit;    // If both 1 collision = 1
+			current_collision = screen[i+y][j+x] & current_bit;    // If both 1 collision = 1
 			collision |= current_collision;
-			screen[i+y][j+x] = (!current_collision) & current_bit;
+			screen[i+y][j+x] ^= current_bit;
 		}
-		screen__draw_row(x, y, screen[i+y]);
+		screen__draw_row(x, y+i, screen[i+y]);
 	}
 
 	write_reg(machine, VF, collision);

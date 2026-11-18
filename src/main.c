@@ -5,10 +5,12 @@
 #include <unistd.h>
 #include "chippotto.h"
 #include "display.h"
+#include "screen.h"
 #include "keyboard.h"
 #include <signal.h>
 
 int DEBUG;
+int EXTRA;
 int REGS;
 
 int open_file(char *filename){
@@ -26,6 +28,7 @@ void signalHandler(int sig){
 	const char msg[] = "Caught SIGINT\n";
 	write(STDOUT_FILENO, msg, sizeof(msg)-1);
 	disable_game_keyboard();
+	screen__disp_clear();	
 	_exit(sig);
 }
 
@@ -34,6 +37,7 @@ int main(int argc, char *argv[]){
 	chippotto machine;
 
 	DEBUG = 0;
+	EXTRA = 0;
 	REGS = 0;
 
 	if(argc < 2){
@@ -42,7 +46,8 @@ int main(int argc, char *argv[]){
 	}
 
 	if(argc > 2) DEBUG=1;
-	if(argc > 3) REGS=1;
+	if(argc > 3) EXTRA=1;
+	if(argc > 4) REGS=1;
 	
 	init_chippotto(&machine);
 	printf("CHIPPOTTO initialized correctly\n");
@@ -60,11 +65,14 @@ int main(int argc, char *argv[]){
 	signal(SIGINT, signalHandler);
 
 	while(1){
+    screen__disp_clear();
+		step_machine(&machine);		
 		if(argc > 2){
+			getc(stdin);
 			print_chippotto_info(&machine);
+      printf("\n");
 			getc(stdin);
 		}
-		step_machine(&machine);		
 		
 	}
 
