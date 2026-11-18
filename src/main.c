@@ -1,3 +1,4 @@
+#include <raylib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -8,6 +9,10 @@
 #include "screen.h"
 #include "keyboard.h"
 #include <signal.h>
+
+#ifdef __RAYLIB
+#include "raylib.h"
+#endif
 
 int DEBUG;
 int EXTRA;
@@ -29,6 +34,7 @@ void signalHandler(int sig){
 	write(STDOUT_FILENO, msg, sizeof(msg)-1);
 	disable_game_keyboard();
 	screen__disp_clear();	
+  screen__close();
 	_exit(sig);
 }
 
@@ -49,6 +55,7 @@ int main(int argc, char *argv[]){
 	if(argc > 3) EXTRA=1;
 	if(argc > 4) REGS=1;
 	
+  screen__init();
 	init_chippotto(&machine);
 	printf("CHIPPOTTO initialized correctly\n");
 
@@ -63,8 +70,12 @@ int main(int argc, char *argv[]){
 	
 	
 	signal(SIGINT, signalHandler);
-
+  screen__disp_clear();
 	while(1){
+#ifdef __RAYLIB
+  BeginDrawing();
+#endif
+    
 		step_machine(&machine);		
 		if(argc > 2){
 			getc(stdin);
@@ -72,6 +83,9 @@ int main(int argc, char *argv[]){
       printf("\n");
 			getc(stdin);
 		}
+#ifdef __RAYLIB
+  EndDrawing();
+#endif
 		
 	}
 
