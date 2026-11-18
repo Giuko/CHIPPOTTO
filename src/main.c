@@ -71,7 +71,11 @@ int main(int argc, char *argv[]){
 	
 	signal(SIGINT, signalHandler);
   screen__disp_clear();
+#ifdef __RAYLIB
+  while(!WindowShouldClose()){
+#else
 	while(1){
+#endif
 #ifdef __RAYLIB
   BeginDrawing();
 #endif
@@ -89,6 +93,10 @@ int main(int argc, char *argv[]){
 		
 	}
 
+  CloseWindow();
+	disable_game_keyboard();
+	screen__disp_clear();	
+  screen__close();
 	
 	return 0;
 }
