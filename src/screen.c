@@ -18,6 +18,7 @@ void screen__draw_row(int x, int y, uint8_t *row){
     else
 		  printf("\033[%d;%dH ", y, x+i);
 	}
+	fflush(stdout);
 }
 
 void screen__disp_clear(){
