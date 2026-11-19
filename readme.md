@@ -26,3 +26,8 @@ Build with raylib:
 ```sh
 make USE_RAYLIB=1
 ```
+## Test results
+
+![CHIPPOTTO running the Timendus test suite](docs/screenshot.png)
+
+Tested against [Timendus' chip8-test-suite](https://github.com/Timendus/chip-8/blob/master/octo/CHIP-8%20logo.8o).
