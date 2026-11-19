@@ -30,8 +30,8 @@ int init_chippotto(chippotto *machine){
 		machine->STACK[i] = 0;
 	}
 
-	machine->DT = 255;
-	machine->ST = 255;
+	machine->DT = 0;
+	machine->ST = 0;
 
 	srand(time(NULL));
 	load_font(machine);
@@ -127,7 +127,7 @@ int read_pc(chippotto *machine, int *value){
 // Access to the STACK
 int pop(chippotto *machine, int *value){
 	if(machine == NULL) return -1;
-	if(machine->SP <= 0) return -2;
+	if(machine->SP < 0) return -2;
 
 	*value = machine->STACK[machine->SP];
 	machine->SP--;

@@ -1,5 +1,7 @@
 // main.c
+#ifdef __RAYLIB
 #include <raylib.h>
+#endif
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
